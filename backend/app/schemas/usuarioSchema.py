@@ -1,6 +1,6 @@
 #Forçar tipagem de dados
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
 
 class UsuarioSchemas(BaseModel):
     nome: str

@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-# Removi as configurações de segurança daqui, pois combinamos de mover para o config.py
 
 app = FastAPI()
 
@@ -11,5 +10,13 @@ from app.models.itemPedido import ItemPedido
 # ------------------------------------------------
 
 from app.routers.authRouter import authRouter
+from app.routers.pedidoRouter import pedidoRouter
+from app.routers.itemPedidoRouter import itemPedidoRouter
+from app.routers.produtoRouter import produtoRouter
+from app.routers.dashboardRouter import dashboardRouter
 
 app.include_router(authRouter)
+app.include_router(pedidoRouter)
+app.include_router(itemPedidoRouter)
+app.include_router(produtoRouter)
+app.include_router(dashboardRouter)

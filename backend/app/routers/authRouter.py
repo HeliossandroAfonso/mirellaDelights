@@ -4,7 +4,7 @@ from app.dependencias.dependencias import pegarPessoas, verificarToken
 from app.core.config import bcryptContext, ALGORITHM, ACCESS_TOKEN_EXPIRE, SECRET_KEY
 from app.schemas.usuarioSchema import UsuarioSchemas, LoginSchema
 from sqlalchemy.orm import Session
-from jose import jwt, JWTError
+from jose import jwt
 from datetime import datetime, timedelta, timezone
 from fastapi.security import OAuth2PasswordRequestForm
 
