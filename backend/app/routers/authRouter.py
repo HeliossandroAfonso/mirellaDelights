@@ -2,11 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.models.usuario import Usuario
 from app.dependencias.dependencias import pegarPessoas, verificarToken
 from app.core.config import bcryptContext, ALGORITHM, ACCESS_TOKEN_EXPIRE, SECRET_KEY
-from app.schemas.usuarioSchema import UsuarioSchemas, LoginSchema
+from app.schemas.usuarioSchema import UsuarioSchemas, LoginSchema, UsuarioResponse, UsuarioUpdate
 from sqlalchemy.orm import Session
 from jose import jwt
 from datetime import datetime, timedelta, timezone
 from fastapi.security import OAuth2PasswordRequestForm
+from app.core.database import get_db
 
 authRouter = APIRouter(prefix="/auth",tags=["auth"])
 
@@ -110,3 +111,33 @@ async def refresh(usuario: Usuario = Depends(verificarToken)):
         "access_token": access_token,
         "token_type": "Bearer"
         }
+    
+@authRouter.put("/{usuarioId}", response_model = UsuarioResponse)
+async def editarUsuario(usuarioId: int, dados: UsuarioUpdate, session: Session = Depends(get_db)):
+    usuario = session.query(Usuario).filter(usuarioId==Usuario.id).first();
+    
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario não encontrado")
+    
+    updateData = dados.model_dump(exclude_unset=True)
+    
+    if "password" in updateData:
+        updateData["password"] = bcryptContext.hash(updateData["password"][:72])
+        
+    for campo, valor in updateData.items():
+        setattr(usuario, campo, valor)
+        
+    session.commit()
+    session.refresh(usuario)
+        
+    return usuario
+
+@authRouter.get("/listar", response_model=list[UsuarioSchemas])
+async def listarUsuarios(
+    session: Session = Depends(get_db),
+    usuario: Usuario = Depends(verificarToken)
+    ):
+    usuarios = session.query(Usuario).all()
+    
+    return usuarios
+    

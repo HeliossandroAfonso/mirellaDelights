@@ -11,10 +11,9 @@ dashboardRouter = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 async def resumoVendasHoje(db: Session = Depends(get_db)):
     hoje = datetime.now().date()
     
-    # Total de pedidos hoje
+
     total_pedidos = db.query(Pedido).filter(func.date(Pedido.dataCriacao) == hoje).count()
     0
-    # Faturamento total hoje (apenas pedidos pagos ou pendentes, ignorando cancelados)
     faturamento = db.query(func.sum(Pedido.total)).filter(
         func.date(Pedido.dataCriacao) == hoje,
         Pedido.status != StatusPedido.CANCELADO
